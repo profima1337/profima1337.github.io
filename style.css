@@ -1,0 +1,280 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #04090a;
+    --card-bg: rgba(8, 20, 20, 0.5);
+    --accent-1: #00FA9A;
+    --accent-2: #40E0D0;
+    --accent-3: #14b8a6;
+    --text: #ffffff;
+    --muted: #8b9b95;
+    --font: 'Outfit', sans-serif;
+
+    /* ====== НАСТРОЙКА КРЫЛЬЕВ ====== */
+    --wings-x: -50%;
+    --wings-y: -50%;
+    --wings-scale: 0.6;
+    --wings-rotate: 0deg;
+    --wings-width: 240px;
+    --wings-z: 3;            /* выше аватарки (ава z-index: 2) */
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.glow {
+    position: absolute;
+    width: 55vw;
+    height: 55vw;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.glow-left {
+    top: -20%;
+    left: -10%;
+    background: radial-gradient(circle, rgba(0, 250, 154, 0.22) 0%, transparent 70%);
+}
+
+.glow-right {
+    bottom: -20%;
+    right: -10%;
+    background: radial-gradient(circle, rgba(64, 224, 208, 0.18) 0%, transparent 70%);
+}
+
+.wrapper {
+    z-index: 1;
+    padding: 2rem 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    animation: fadeIn 0.9s ease-out;
+}
+
+.card {
+    position: relative;
+    background: var(--card-bg);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-radius: 30px;
+    padding: 3rem 2.2rem 3rem;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+    transition: transform 0.4s ease;
+    box-shadow:
+        0 30px 80px -20px rgba(0, 0, 0, 0.85),
+        0 0 60px -15px rgba(0, 250, 154, 0.3);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    padding: 1.5px;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3), transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.avatar-block {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.6rem;
+    width: 160px;
+    height: 160px;
+}
+
+.wings {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(var(--wings-x), var(--wings-y)) scale(var(--wings-scale)) rotate(var(--wings-rotate));
+    width: var(--wings-width);
+    height: auto;
+    z-index: var(--wings-z);  /* ПОВЕРХ АВАТАРКИ */
+    pointer-events: none;
+    filter: drop-shadow(0 0 15px rgba(0, 250, 154, 0.5));
+    animation: wingFloat 4s ease-in-out infinite;
+}
+
+.avatar {
+    position: relative;
+    width: 124px;
+    height: 124px;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 2;               /* ниже крыльев */
+    border: 3px solid #04090a;
+    display: block;
+    box-shadow: 0 0 30px rgba(0, 250, 154, 0.5);
+}
+
+.name {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-1) 50%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 25px rgba(0, 250, 154, 0.35));
+}
+
+.bio {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 1rem 1.4rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 250, 154, 0.12);
+    border-radius: 16px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.link:hover::before {
+    transform: translateX(100%);
+}
+
+.link i {
+    font-size: 1.35rem;
+    width: 26px;
+    text-align: center;
+    transition: transform 0.35s ease, filter 0.35s ease;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+.link span {
+    color: var(--text);
+}
+
+.link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-3px);
+}
+
+.link:hover i {
+    transform: scale(1.18);
+}
+
+.link.discord i   { color: #5865F2; }
+.link.steam i     { color: #66c0f4; }
+.link.roblox i    { color: #FFFFFF; }
+.link.xbox i      { color: #107C10; }
+.link.telegram i  { color: #229ED9; }
+
+.link.discord:hover   { border-color: #5865F2; box-shadow: 0 12px 30px -12px rgba(88, 101, 242, 0.7); }
+.link.steam:hover     { border-color: #66c0f4; box-shadow: 0 12px 30px -12px rgba(102, 192, 244, 0.7); }
+.link.roblox:hover    { border-color: #FFFFFF; box-shadow: 0 12px 30px -12px rgba(255, 255, 255, 0.7); }
+.link.xbox:hover      { border-color: #107C10; box-shadow: 0 12px 30px -12px rgba(16, 124, 16, 0.7); }
+.link.telegram:hover  { border-color: #229ED9; box-shadow: 0 12px 30px -12px rgba(34, 158, 217, 0.7); }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wingFloat {
+    0%, 100% { transform: translate(var(--wings-x), var(--wings-y)) scale(var(--wings-scale)) rotate(var(--wings-rotate)) translateY(0); }
+    50%      { transform: translate(var(--wings-x), var(--wings-y)) scale(var(--wings-scale)) rotate(var(--wings-rotate)) translateY(-4px); }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --wings-width: 200px;
+    }
+
+    .wrapper {
+        padding: 1rem;
+    }
+
+    .card {
+        padding: 2.5rem 1.5rem 2.5rem;
+        border-radius: 24px;
+    }
+
+    .card::before {
+        border-radius: 24px;
+    }
+
+    .avatar-block {
+        width: 140px;
+        height: 140px;
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .name {
+        font-size: 1.9rem;
+    }
+
+    .bio {
+        font-size: 0.9rem;
+        margin-bottom: 1.6rem;
+    }
+
+    .link {
+        padding: 0.85rem 1.1rem;
+        font-size: 0.95rem;
+        border-radius: 14px;
+        gap: 14px;
+    }
+
+    .link i {
+        font-size: 1.15rem;
+    }
+}
