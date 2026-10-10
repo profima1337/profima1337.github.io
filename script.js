@@ -1,24 +1,77 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const starsContainer = document.getElementById('stars');
+    const cursorGlow = document.getElementById('cursorGlow');
+    const cursorStar = document.getElementById('cursorStar');
     const card = document.querySelector('.card');
-    const glowLeft = document.querySelector('.glow-left');
-    const glowRight = document.querySelector('.glow-right');
 
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    if (!isTouch && card) {
-        document.addEventListener('mousemove', (e) => {
-            const x = (window.innerWidth / 2 - e.pageX) / 45;
-            const y = (window.innerHeight / 2 - e.pageY) / 45;
+    if (starsContainer) {
+        const count = window.innerWidth < 600 ? 40 : 80;
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('span');
+            star.className = 'star';
+            const size = Math.random() * 2 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 4 + 's';
+            star.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            star.style.opacity = Math.random() * 0.6 + 0.2;
 
-            card.style.transform = `translate(${x}px, ${y}px)`;
-            if (glowLeft) glowLeft.style.transform = `translate(${x * -2}px, ${y * -2}px)`;
-            if (glowRight) glowRight.style.transform = `translate(${x * 2}px, ${y * 2}px)`;
+            if (Math.random() > 0.85) {
+                const hue = [280, 200, 320][Math.floor(Math.random() * 3)];
+                star.style.background = `hsl(${hue}, 90%, 75%)`;
+                star.style.boxShadow = `0 0 8px hsl(${hue}, 90%, 70%)`;
+            }
+
+            starsContainer.appendChild(star);
+        }
+    }
+
+    if (!isTouch && cursorGlow && cursorStar) {
+        let mouseX = -100;
+        let mouseY = -100;
+        let glowX = -100;
+        let glowY = -100;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            document.body.classList.add('cursor-active');
+
+            cursorStar.style.left = mouseX + 'px';
+            cursorStar.style.top = mouseY + 'px';
+
+            if (card) {
+                const rect = card.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const dx = (mouseX - cx) / rect.width;
+                const dy = (mouseY - cy) / rect.height;
+                card.style.transform = `perspective(1500px) rotateY(${dx * 1}deg) rotateX(${-dy * 1}deg)`;
+            }
+        });
+
+        document.querySelectorAll('a, button, .link').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorStar.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursorStar.classList.remove('hover'));
         });
 
         document.addEventListener('mouseleave', () => {
-            card.style.transform = 'translate(0, 0)';
-            if (glowLeft) glowLeft.style.transform = 'translate(0, 0)';
-            if (glowRight) glowRight.style.transform = 'translate(0, 0)';
+            document.body.classList.remove('cursor-active');
+            if (card) card.style.transform = 'perspective(1500px) rotateY(0) rotateX(0)';
         });
+
+        const loop = () => {
+            glowX += (mouseX - glowX) * 0.15;
+            glowY += (mouseY - glowY) * 0.15;
+            cursorGlow.style.left = glowX + 'px';
+            cursorGlow.style.top = glowY + 'px';
+            requestAnimationFrame(loop);
+        };
+        loop();
     }
 });
